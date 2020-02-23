@@ -1,6 +1,7 @@
 # imports
 import os
 from functools import wraps
+
 from flask import (
     Flask,
     request,
@@ -20,17 +21,14 @@ from flask_sqlalchemy import SQLAlchemy
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # configuration
-DATABASE = "flaskr.db"
-DEBUG = True
 SECRET_KEY = "my_precious"
 USERNAME = "admin"
 PASSWORD = "admin"
 
-# define the full path for the database
-DATABASE_PATH = os.path.join(basedir, DATABASE)
-
 # database config
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + DATABASE_PATH
+SQLALCHEMY_DATABASE_URI = os.getenv(
+    "DATABASE_URL", f'sqlite:///{os.path.join(basedir, "flaskr.db")}'
+)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # create app
