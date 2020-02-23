@@ -1,6 +1,6 @@
 # imports
 import os
-
+from functools import wraps
 from flask import (
     Flask,
     request,
@@ -39,6 +39,17 @@ app.config.from_object(__name__)
 db = SQLAlchemy(app)
 
 import models
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            flash("Please log in.")
+            return jsonify({"status": 0, "message": "Please log in."}), 401
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 @app.route("/")
@@ -85,6 +96,7 @@ def logout():
 
 
 @app.route("/delete/<int:post_id>", methods=["GET"])
+@login_required
 def delete_entry(post_id):
     """Deletes post from database."""
     result = {"status": 0, "message": "Error"}
